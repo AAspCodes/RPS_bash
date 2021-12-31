@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+player_wins=0
+comp_wins=0
+round=0
+
+help() {
+    echo "usage: "
+    exit
+}
+
+show_status() {
+    echo "player has $player_wins wins"
+    echo "computer has $comp_wins wins"
+}
+
+compute_round() {
+    echo
+    echo "computing round"
+    comp_choice=$((1 + $RANDOM % 3))
+
+    if (($1 == $comp_choice)); then
+        echo "draw"
+    elif (($1 % 3 + 1 == $comp_choice)); then
+        echo "player loses"
+        ((comp_wins++))
+    else
+        echo "player wins!"
+        ((player_wins++))
+    fi
+}
+
+while getopts r: option; do
+    case $option in
+    r) rounds=$OPTARG ;;
+        #?) echo 'option not recognized';;
+    esac
+done
+
+wins_needed=$((rounds / 2 + 1))
+
+prompt() {
+    echo "round $round"
+    echo "rock paper or scissors?"
+}
+
+while true; do
+    prompt
+    select choice in "rock" "paper" "scissors" "give up"; do
+        case $choice in
+        rock)
+            compute_round 1
+            break
+            ;;
+        paper)
+            compute_round 2
+            break
+            ;;
+        scissors)
+            compute_round 3
+            break
+            ;;
+        "give up")
+            echo "bye bye"
+            exit
+            ;;
+        *)
+            echo "enter 1-4"
+            break
+            ;;
+        esac
+    done
+    ((round++))
+    show_status
+done
